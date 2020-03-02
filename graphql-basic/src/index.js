@@ -40,13 +40,19 @@ const posts = [{
 
 const comments = [{
     id: '102',
-    text: 'This worked well for me'
+    text: 'This worked well for me',
+    author: '3',
+    post:'1'
 },{
     id: '103',
-    text: 'Glad you enjoyed it'
+    text: 'Glad you enjoyed it',
+    author: '1',
+    post:'3'
 },{
     id: '104',
-    text: 'this is do not work'
+    text: 'this is do not work',
+    author: '2',
+    post:'2'
 }]
 
 //Type definitions (schema)
@@ -65,6 +71,7 @@ const typeDefs = `
         email: String!
         age: Int
         posts: [Post!]!
+        comments: [Comment!]!
     }
 
     type Post {
@@ -73,11 +80,14 @@ const typeDefs = `
         body: String!
         published: Boolean!
         author: User!
+        comment: [Comment!]!
     }
 
     type Comment {
         id: ID!
         text: String!
+        author: User!
+        post: Post!
     }
 `
 
@@ -130,10 +140,29 @@ const resolvers = {
             })
         },
     },
+    Comment:{
+        author(parent,args,ctx,info){
+            return users.find((user)=>{
+                return user.id === parent.author
+            })
+        },
+        post(parent,args,ctx,info){
+            return posts.find((post)=>{
+                return post.id === parent.post
+            })
+        }
+    },
     User: {
         posts(parent,args,ctx,info){
             return posts.filter((post)=>{
                 return post.author===parent.id
+            })
+        },
+        comments(parent,args,ctx,info){
+            // console.log('parent',parent)
+            // console.log('comments',comments)
+            return comments.filter((comment)=>{
+                return comment.author===parent.id
             })
         }
     }
